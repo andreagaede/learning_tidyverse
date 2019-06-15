@@ -97,7 +97,6 @@ flights %>%
   spread(dest, count) 
 
 
-  mutate(empties = rowSums(is.na()))
   
 top_carriers <- flights %>%
   select(carrier) %>%
