@@ -29,7 +29,7 @@ library(nycflights13)
 ## talk about grammar of graphics
 ## talk about aesthetics within each plot
 ## in prettify: talk about facet, smooth, reordering
-# histogram: color vs fill, alpha, 
+# histogram: color vs fill, alpha,
 # bar: factor level reorder
 # geom_boxplot + geom_violin(): overlaying points with alpha
 # scatter + geom_smooth(): point size, line type, size inside vs outside aes(), scale_x_log10()
@@ -42,18 +42,18 @@ library(nycflights13)
 ## What times are busiest?
 
 ## Wrangle data
-wrangled_hr <- flights %>% 
+wrangled_hr <- flights %>%
   select(hour, minute)
 
 wrangled_hr
 
 ## Plot
-wrangled_hr %>% 
+wrangled_hr %>%
   ggplot() +
   geom_histogram(aes(hour))
 
 ## Prettify plot
-wrangled_hr %>% 
+wrangled_hr %>%
   ggplot() +
   geom_histogram(aes(hour), binwidth = 1) +
   theme_minimal()
@@ -65,7 +65,7 @@ wrangled_hr %>%
 ## What times are busiest?
 
 ## Wrangle data
-wrangled_min <- wrangled_hr %>% 
+wrangled_min <- wrangled_hr %>%
   mutate(
     time_min = 60 * hour + minute,
     time = time_min / 60
@@ -74,12 +74,12 @@ wrangled_min <- wrangled_hr %>%
 wrangled_min
 
 ## Plot
-wrangled_min %>% 
+wrangled_min %>%
   ggplot() +
   geom_histogram(aes(time), binwidth = 1)
 
 ## Prettify plot
-wrangled_min %>% 
+wrangled_min %>%
   ggplot() +
   geom_histogram(aes(time), binwidth = 1/4) +
   labs(x = "Time (hour)", y = "Number of Flights", title = "Busiest departure times at New York airports") +
@@ -94,10 +94,10 @@ flights %>%
   select(carrier, dest) %>%
   group_by(carrier, dest) %>%
   summarize(count = n()) %>%
-  spread(dest, count) 
+  spread(dest, count)
 
 
-  
+
 top_carriers <- flights %>%
   select(carrier) %>%
   group_by(carrier) %>%
@@ -120,7 +120,7 @@ wrangled_dest <- flights %>%
   filter(
     carrier %in% top_carriers,
     dest %in% top_dest
-  ) 
+  )
 
 %>%
   group_by(dest, carrier) %>%
