@@ -90,67 +90,52 @@ wrangled_min %>%
 ############################################
 
 ## Wrangle data
-flights %>%
-  select(carrier, dest) %>%
-  group_by(carrier, dest) %>%
-  summarize(count = n()) %>%
-  spread(dest, count)
-
-
-
 top_carriers <- flights %>%
-  select(carrier) %>%
-  group_by(carrier) %>%
-  summarize(count = n()) %>%
-  arrange(-count)
-top_carriers <- top_carriers$carrier[1:5]
-top_carriers
+  count(carrier) %>%
+  arrange(-n) %>%
+  head(5) %>%
+  pull(carrier)
 
 top_dest <- flights %>%
+  select(carrier, dest) %>%
   filter(carrier %in% top_carriers) %>%
-  select(dest) %>%
-  group_by(dest) %>%
-  summarize(count = n()) %>%
-  arrange(-count)
-top_dest <- top_dest$dest[1:6]
-top_dest
+  count(carrier, dest) %>%
+  spread(carrier, n) %>%
+  drop_na %>%
+  pull(dest)
 
 wrangled_dest <- flights %>%
   select(carrier, dest) %>%
   filter(
     carrier %in% top_carriers,
     dest %in% top_dest
-  )
+  ) %>%
+  inner_join(airlines)
 
-%>%
-  group_by(dest, carrier) %>%
-  summarize(count = n())
+wrangled_dest
 
 ## Plot
 wrangled_dest %>%
   ggplot() +
-  geom_tile(aes(dest, carrier, fill = count))
+  geom_bin2d(aes(dest, name))
 
-wrangled_dest %>%
-  ggplot() +
-  geom_bar(aes(dest)) +
-  facet_wrap(~ carrier)
+## Prettify plot
+
+############################################
+##                Plot 4                  ##
+############################################
+
+## Which airlines experience the most delays?
+
+## Wrangle data
+flights %>%
+  select(tailnum, arr_delay) %>%
+## Plot
+  ggplot(aes(tailnum, arr_delay)) +
+  geom_boxplot()
 
 ## Prettify plot
 flights %>%
-  select(dest, carrier) %>%
-  filter(carrier %in% c("UA", "EV", "9E")) %>%
-  left_join(airlines) %>%
-  select(-carrier) %>%
-  group_by(dest, name) %>%
-  summarize(n = n()) %>%
-  spread(name, n) %>%
-  filter_all(~!is.na(.x)) %>%
-  gather(name, n, 2:4) %>%
-  mutate(n = log(n)) %>%
-  ggplot() +
-  geom_tile(aes(dest, name, fill = n))
-
-flights %>%
-  select(dest, carrier) %>%
-  filter(carrier %in% c("UA", "EV", "9E"))
+  select(carrier, distance) %>%
+  ggplot(aes(carrier, distance)) +
+  geom_boxplot()
