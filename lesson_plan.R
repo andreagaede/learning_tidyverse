@@ -192,8 +192,6 @@ left_join(flights, airlines, by = "carrier") %>%
 ##                Plot 5                  ##
 ############################################
 
-#
-
 ## How does time of year affect flight delay?
 
 season_df <- flights %>%

@@ -83,3 +83,11 @@ drop_na(crime) # Remove all rows with any NA's
 ## Plot
 
 ## Prettify plot
+
+############################################
+##                Plot 5                  ##
+############################################
+
+## How does time of year affect flight delay?
+
+
