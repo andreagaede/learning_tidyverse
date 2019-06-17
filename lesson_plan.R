@@ -163,14 +163,73 @@ wrangled_dest %>%
 ## Which airlines experience the most delays?
 
 ## Wrangle data
-flights %>%
-  select(tailnum, arr_delay) %>%
-## Plot
-  ggplot(aes(tailnum, arr_delay)) +
-  geom_boxplot()
 
-## Prettify plot
-flights %>%
-  select(carrier, distance) %>%
-  ggplot(aes(carrier, distance)) +
-  geom_boxplot()
+left_join(flights, airlines, by = "carrier") %>%
+  filter(is.na(flights$arr_delay) == FALSE) %>%
+  sample_frac(0.1) %>%
+  ggplot() +
+  geom_jitter(height = 0.3, size = 0.1, aes(arr_delay, name, alpha = 1/10, color = name)) +
+  theme_classic() +
+  theme(legend.position = "none")
+
+
+
+left_join(flights, airlines, by = "carrier") %>%
+  filter(is.na(flights$arr_delay) == FALSE) %>%
+  sample_frac(0.1) %>%
+  ggplot(aes(name, arr_delay, color = name, fill = name)) +
+  geom_boxplot(aes(alpha = 1/5)) +
+  geom_jitter(position = position_jitter(width = 0, height = 0.1), alpha = 1/4) +
+  # geom_jitter(width = 0.1, aes(color = name)) +
+  theme(legend.position = "none") +
+  scale_y_log10() +
+  coord_flip()
+
+
+
+
+############################################
+##                Plot 5                  ##
+############################################
+
+#
+
+## How does time of year affect flight delay?
+
+season_df <- flights %>%
+  select(month, day, arr_delay, dep_delay, origin, dest, carrier) %>%
+  filter(arr_delay >= 0, dep_delay >= 0) %>%
+  group_by(origin, month, day) %>%
+  summarise(avg_delay = mean(arr_delay, na.rm = TRUE) + mean(dep_delay, na.rm = TRUE)) %>%
+  ungroup()
+
+season_df %>%
+  group_by(origin) %>%
+  summarise(max(avg_delay), min(avg_delay))
+
+season_df$date <- with(season_df, ISOdate(year = 2013, month, day))
+
+season_df %>%
+  ggplot(aes(date, avg_delay)) +
+  geom_point(aes(color = origin)) +
+  scale_color_manual(values = c("springgreen", "purple", "dodgerblue")) +
+  geom_smooth(color = "magenta") +
+  ylab("average delay (min)") +
+  theme_classic()
+
+season_df %>%
+  ggplot(aes(date, avg_delay)) +
+  geom_point(aes(color = origin, alpha = 1/8)) +
+  geom_smooth(aes(color = origin), se = FALSE) +
+  scale_color_manual(values = c("springgreen", "purple", "dodgerblue")) +
+  ylab("average delay (min)") +
+  theme_classic()
+
+season_df %>%
+  ggplot(aes(date, avg_delay)) +
+  geom_smooth(aes(color = origin), se = FALSE) +
+  scale_color_manual(values = c("springgreen", "purple", "dodgerblue")) +
+  ylab("average delay (min)") +
+  theme_classic()
+
+
