@@ -104,7 +104,7 @@ wrangled_min <- wrangled_hr %>%
   mutate(
     time_min = 60 * hour + minute,
     time = time_min / 60
-    )
+  )
 
 wrangled_min
 
@@ -120,44 +120,9 @@ wrangled_min %>%
   labs(x = "Time (hour)", y = "Number of Flights", title = "Busiest departure times at New York airports") +
   theme_minimal()
 
+
 ############################################
 ##                Plot 3                  ##
-############################################
-
-## Wrangle data
-top_carriers <- flights %>%
-  count(carrier) %>%
-  arrange(-n) %>%
-  head(5) %>%
-  pull(carrier)
-
-top_dest <- flights %>%
-  select(carrier, dest) %>%
-  filter(carrier %in% top_carriers) %>%
-  count(carrier, dest) %>%
-  spread(carrier, n) %>%
-  drop_na %>%
-  pull(dest)
-
-wrangled_dest <- flights %>%
-  select(carrier, dest) %>%
-  filter(
-    carrier %in% top_carriers,
-    dest %in% top_dest
-  ) %>%
-  inner_join(airlines)
-
-wrangled_dest
-
-## Plot
-wrangled_dest %>%
-  ggplot() +
-  geom_bin2d(aes(dest, name))
-
-## Prettify plot
-
-############################################
-##                Plot 4                  ##
 ############################################
 
 ## Which airlines experience the most delays?
@@ -189,7 +154,7 @@ left_join(flights, airlines, by = "carrier") %>%
 
 
 ############################################
-##                Plot 5                  ##
+##                Plot 4                  ##
 ############################################
 
 ## How does time of year affect flight delay?
@@ -223,6 +188,15 @@ season_df %>%
   ylab("average delay (min)") +
   theme_classic()
 
+## let's facet
+season_df %>%
+  ggplot(aes(date, avg_delay)) +
+  geom_point(aes(color = origin, alpha = 1/8)) +
+  geom_smooth(color = "blue", se = FALSE) +
+  scale_color_manual(values = c("springgreen", "purple", "dodgerblue")) +
+  ylab("average delay (min)") +
+  facet_grid(~origin)
+
 season_df %>%
   ggplot(aes(date, avg_delay)) +
   geom_smooth(aes(color = origin), se = FALSE) +
@@ -231,3 +205,40 @@ season_df %>%
   theme_classic()
 
 
+############################################
+##                Plot 5                  ##
+############################################
+
+## Which destinations are serviced by the top x airlines?
+
+## Wrangle data
+top_carriers <- flights %>%
+  count(carrier) %>%
+  arrange(-n) %>%
+  head(5) %>%
+  pull(carrier)
+
+top_dest <- flights %>%
+  select(carrier, dest) %>%
+  filter(carrier %in% top_carriers) %>%
+  count(carrier, dest) %>%
+  spread(carrier, n) %>%
+  drop_na %>%
+  pull(dest)
+
+wrangled_dest <- flights %>%
+  select(carrier, dest) %>%
+  filter(
+    carrier %in% top_carriers,
+    dest %in% top_dest
+  ) %>%
+  inner_join(airlines)
+
+wrangled_dest
+
+## Plot
+wrangled_dest %>%
+  ggplot() +
+  geom_bin2d(aes(dest, name)) 
+
+## Prettify plot
