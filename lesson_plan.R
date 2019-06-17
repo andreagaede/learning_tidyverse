@@ -34,6 +34,41 @@ library(nycflights13)
 # geom_boxplot + geom_violin(): overlaying points with alpha
 # scatter + geom_smooth(): point size, line type, size inside vs outside aes(), scale_x_log10()
 
+############################################
+##                Import                  ##
+############################################
+
+# You can read in directly from files online
+crime <- read_csv("https://vincentarelbundock.github.io/Rdatasets/csv/Ecdat/Crime.csv")
+
+# Datasets need documentation too
+browseURL("https://vincentarelbundock.github.io/Rdatasets/doc/Ecdat/Crime.html")
+
+############################################
+##                Clean                   ##
+############################################
+
+# inspect data: head(), tail(), summary(), names(), unique(), briefly mention tibble vs df
+# remove spaces
+# change case
+# rename columns
+# reorder columns
+
+# Take a look at subset of rows
+head(crime)
+tail(crime)
+sample_frac(crime, 0.01)
+
+# Get an overview of the data
+names(crime)
+summary(crime)
+
+# Subset, reorder, clean data
+select(crime) # Subset columns, can also be used to rename and reorder cols
+filter(crime) # Subset rows
+rename(crime) # Rename
+drop_na(crime) # Remove all rows with any NA's
+
 
 ############################################
 ##                Plot 1                  ##
